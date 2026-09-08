@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260908-05-b9d8a99","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Canva Sans":"YAFLd8sKbwc,2","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAHO2VMiyZo,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAEul-FRQw4,0","Georgia":"YAGzXkO0pEM,0","Helvetica Neue":"YAFcf6CtJfI,0","Impact":"YAFcfnjI7Vk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Libre Baskerville":"YACgEUFdPdA,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YADLjI9qxTA,0","Nunito":"YACgEX8C5Gg,0","Oleo Script":"YACgEQQ14jI,0","Phantom Sans":"YAHO2E8Pb88,0","Playfair Display":"YACgEYmuCJE,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YADWjpfPmdk,0","Raleway":"YACgEVg3xZg,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Ubuntu":"YACgERDU--Q,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YADlN8CFZ8Q,0","ui-sans-serif":"YACkoN-xg4g,0"}}');</script><script src="/_sdk/9e99ecf74af2a081.telemetry_sdk.js" integrity="sha512-tZ7fmfTx2KpCLjXQnEuL9azQ4A5+7+xumsx6r/WYVD0zCP/8LP8hDeCypMQesmP+WyAew4g7l5Ah23Bjd6yoVg=="></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zonk Classroom Game</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10213e;
+      --cream: #fff8e7;
+      --yellow: #ffd43b;
+      --red: #f44b4b;
+      --teal: #13b8a6;
+      --lime: #bbdf39;
+      --purple: #c5b4ff;
+      --blue: #79bfff;
+      --orange: #ffad5c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: "Work Sans", sans-serif;
+      color: var(--ink);
+    }
+
+    .game-shell {
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+    }
+
+    .paper-speckles {
+      background-image:
+        radial-gradient(rgba(16, 33, 62, .07) 1px, transparent 1px),
+        radial-gradient(rgba(16, 33, 62, .045) 1px, transparent 1px);
+      background-position: 0 0, 14px 14px;
+      background-size: 28px 28px;
+    }
+
+    .title-shadow { text-shadow: 4px 4px 0 var(--ink); }
+
+    .setup-card,
+    .team-card {
+      border: 3px solid var(--ink);
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+
+    .setup-card { animation: slide-up .42s ease-out both; }
+
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(14px) rotate(-.5deg); }
+      to { opacity: 1; transform: translateY(0) rotate(0); }
+    }
+
+    .name-field {
+      width: 100%;
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      background: #fffdf6;
+      padding: .75rem .875rem;
+      color: var(--ink);
+      font-weight: 700;
+      outline: none;
+    }
+
+    .name-field:focus {
+      border-color: var(--red);
+      box-shadow: 3px 3px 0 var(--red);
+    }
+
+    .board-scroll {
+      overflow-x: auto;
+      padding-bottom: .75rem;
+    }
+
+    .zonk-board {
+      display: grid;
+      grid-template-columns: 54px repeat(10, minmax(72px, 1fr));
+      gap: 7px;
+      min-width: 850px;
+    }
+
+    .corner-cell,
+    .photo-cell,
+    .row-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+
+    .corner-cell {
+      background: var(--ink);
+      color: var(--cream);
+    }
+
+    .photo-cell {
+      position: relative;
+      min-height: 74px;
+      overflow: hidden;
+      border: 3px solid var(--ink);
+      background: var(--yellow);
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .animal-photo {
+      width: 100%;
+      height: 100%;
+      min-height: 74px;
+      object-fit: cover;
+    }
+
+    .row-label {
+      min-height: 62px;
+      border: 3px solid var(--ink);
+      background: var(--teal);
+      color: #ffffff;
+      box-shadow: 0 3px 0 var(--ink);
+    }
+
+    .board-tile {
+      position: relative;
+      min-height: 62px;
+      border: 3px solid var(--ink);
+      border-radius: 13px;
+      background: #fffdf6;
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--ink);
+      transition: transform .13s ease, box-shadow .13s ease, background .13s ease;
+    }
+
+    .board-tile:hover:not(:disabled) {
+      transform: translateY(-3px) rotate(-1deg);
+      background: #fff2bd;
+      box-shadow: 0 7px 0 var(--ink);
+    }
+
+    .board-tile:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--ink);
+    }
+
+    .board-tile:disabled {
+      cursor: default;
+      border-color: #8da0b3;
+      background: #dce4eb;
+      color: #69778a;
+      box-shadow: none;
+    }
+
+    .board-tile:focus-visible,
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 4px solid var(--red);
+      outline-offset: 3px;
+    }
+
+    .tile-dot {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--red);
+    }
+
+    .team-card {
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .team-card.active {
+      transform: translateY(-4px);
+      box-shadow: 6px 8px 0 var(--ink);
+    }
+
+    .team-score { font-variant-numeric: tabular-nums; }
+
+    .reveal-modal { display: none; }
+    .reveal-modal.open { display: flex; }
+    .reveal-card { animation: pop-in .22s ease-out both; }
+
+    @keyframes pop-in {
+      from { opacity: 0; transform: scale(.88) rotate(-2deg); }
+      to { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    .burst { animation: wiggle .55s ease-in-out; }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0); }
+      25% { transform: rotate(-2deg); }
+      75% { transform: rotate(2deg); }
+    }
+
+    .outcome-icon {
+      display: grid;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      place-items: center;
+      border: 4px solid var(--ink);
+      border-radius: 50%;
+      font-size: 2.5rem;
+    }
+
+    .sr-only-live {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 700px) {
+      .title-shadow { text-shadow: 3px 3px 0 var(--ink); }
+      .zonk-board {
+        min-width: 760px;
+        grid-template-columns: 46px repeat(10, minmax(65px, 1fr));
+      }
+    }
+  </style>
+  <script src="/_sdk/fbe2ebfd64647c54.data_sdk.js" type="text/javascript" integrity="sha512-vkTX6CfvpHc3WbjK+tFJCaDuw4ERA4aEV/e5/7+MMJPMTF4RJYCI6CAwJBT/gtDW+dba4uLSsPUgDjVDHWtgUQ=="></script>
+  <script src="/_sdk/fcb6dc01f91829ac.resizing_sdk.js" type="text/javascript" integrity="sha512-YK8JfnN705qaEaVhiL7pcVB2Rs/BbdX5yxV55Az8zT/1JanyEWTw9HqCF915m9iV1YEaoil8qsjJz03l1Kb0Ug=="></script>
+ </head>
+ <body data-template-id="__page-root" class="game-shell paper-speckles" style="background: rgb(255, 248, 231);">
+  <header data-template-id="game-header" class="canva-header border-b-4 border-[#10213e] bg-[#f44b4b] px-5 py-6 sm:px-8" style="background: rgb(244, 75, 75);">
+   <div class="mx-auto flex w-full max-w-7xl flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+     <div data-template-id="header-kicker" class="canva-tag mb-2 inline-flex rounded-full border-2 border-[#10213e] bg-[#ffd43b] px-3 py-1 text-sm font-extrabold uppercase tracking-wider" style="background: rgb(255, 212, 59); color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 14px;">Classroom game board</div>
+     <h1 data-template-id="game-title" class="canva-text title-shadow max-w-3xl font-black leading-none text-[#fff8e7]" style="color: rgb(255, 248, 231); font-weight: 900; font-style: normal; font-size: 32px;">ZONK!</h1>
+    </div>
+    <p data-template-id="header-instructions" class="canva-text max-w-xl rounded-2xl border-3 border-[#10213e] bg-[#fff8e7] p-4 font-semibold text-[#10213e] shadow-[4px_4px_0_#10213e]" style="background: rgb(255, 248, 231); color: rgb(16, 33, 62); font-weight: 600; font-style: normal; font-size: 16px;">Set up six teams, choose an animal picture and a number, then reveal the surprise!</p>
+   </div>
+  </header>
+  <main class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+   <section id="setup-screen" data-template-id="setup-panel" class="canva-panel setup-card mx-auto max-w-4xl rounded-[28px] bg-[#fff8e7] p-5 sm:p-8" aria-labelledby="setup-heading" style="background: rgb(255, 248, 231);">
+    <div class="mb-6 text-center">
+     <div class="mb-3 text-5xl" aria-hidden="true">
+      🏁
+     </div>
+     <h2 id="setup-heading" data-template-id="setup-heading-text" class="canva-text font-black" style="color: rgb(16, 33, 62); font-weight: 900; font-style: normal; font-size: 28px;">Name your six teams</h2>
+     <p data-template-id="setup-helper" class="canva-text mx-auto mt-2 max-w-xl font-medium text-[#43526a]" style="color: rgb(67, 82, 106); font-weight: 500; font-style: normal; font-size: 16px;">Type a name for every team, then start the game. Leave a field blank to use the suggested name.</p>
+    </div>
+    <form id="team-setup-form">
+     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+       <label data-template-id="setup-team-label-0" class="canva-text mb-2 block font-black" for="team-input-0" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 1</label> <input id="team-input-0" data-template-id="setup-team-input-0" class="canva-input name-field" type="text" maxlength="28" placeholder="Red Rovers" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+      <div>
+       <label data-template-id="setup-team-label-1" class="canva-text mb-2 block font-black" for="team-input-1" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 2</label> <input id="team-input-1" data-template-id="setup-team-input-1" class="canva-input name-field" type="text" maxlength="28" placeholder="Green Giants" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+      <div>
+       <label data-template-id="setup-team-label-2" class="canva-text mb-2 block font-black" for="team-input-2" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 3</label> <input id="team-input-2" data-template-id="setup-team-input-2" class="canva-input name-field" type="text" maxlength="28" placeholder="Blue Blazers" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+      <div>
+       <label data-template-id="setup-team-label-3" class="canva-text mb-2 block font-black" for="team-input-3" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 4</label> <input id="team-input-3" data-template-id="setup-team-input-3" class="canva-input name-field" type="text" maxlength="28" placeholder="Purple Panthers" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+      <div>
+       <label data-template-id="setup-team-label-4" class="canva-text mb-2 block font-black" for="team-input-4" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 5</label> <input id="team-input-4" data-template-id="setup-team-input-4" class="canva-input name-field" type="text" maxlength="28" placeholder="Sky Sharks" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+      <div>
+       <label data-template-id="setup-team-label-5" class="canva-text mb-2 block font-black" for="team-input-5" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Team 6</label> <input id="team-input-5" data-template-id="setup-team-input-5" class="canva-input name-field" type="text" maxlength="28" placeholder="Orange Owls" style="font-weight: 500; font-style: normal; font-size: 16px;">
+      </div>
+     </div><button data-template-id="start-game-button" class="canva-button mx-auto mt-7 flex items-center justify-center gap-2 rounded-xl border-3 border-[#10213e] bg-[#13b8a6] px-6 py-4 font-black text-white shadow-[4px_4px_0_#10213e] transition hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#10213e] active:translate-y-1 active:shadow-[2px_2px_0_#10213e]" type="submit" style="background: rgb(19, 184, 166); color: rgb(255, 255, 255); font-weight: 900;"> <i data-lucide="play" width="20" height="20" aria-hidden="true"></i> <span data-template-id="start-game-button-text" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 900; font-style: normal; font-size: 16px;">Start the game!</span> </button>
+    </form>
+   </section>
+   <div id="game-screen" class="hidden">
+    <section aria-labelledby="scores-heading" class="mb-6">
+     <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+      <h2 id="scores-heading" data-template-id="scores-heading-text" class="canva-text font-black" style="color: rgb(16, 33, 62); font-weight: 900; font-style: normal; font-size: 24px;">Team scores</h2>
+      <div class="flex flex-wrap items-center gap-2">
+       <label data-template-id="active-team-label" class="canva-text font-bold" for="active-team" style="color: rgb(16, 33, 62); font-weight: 700; font-style: normal; font-size: 16px;">Playing now:</label> <select id="active-team" class="rounded-xl border-3 border-[#10213e] bg-white px-3 py-2 font-bold text-[#10213e]"></select> <button id="edit-teams" data-template-id="edit-teams-button" class="canva-button inline-flex items-center gap-2 rounded-xl border-3 border-[#10213e] bg-[#ffd43b] px-3 py-2 font-black shadow-[3px_3px_0_#10213e]" type="button" style="background: rgb(255, 212, 59); color: rgb(16, 33, 62); font-weight: 800;"> <i data-lucide="pencil" width="17" height="17" aria-hidden="true"></i> <span data-template-id="edit-teams-button-text" class="canva-text" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Edit team names</span> </button>
+      </div>
+     </div>
+     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+      <article class="team-card rounded-2xl bg-[#ffd43b] p-4" data-team-card="0">
+       <p id="team-name-0" class="font-black"></p>
+       <p id="score-0" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+      <article class="team-card rounded-2xl bg-[#bbdf39] p-4" data-team-card="1">
+       <p id="team-name-1" class="font-black"></p>
+       <p id="score-1" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+      <article class="team-card rounded-2xl bg-[#13b8a6] p-4 text-white" data-team-card="2">
+       <p id="team-name-2" class="font-black"></p>
+       <p id="score-2" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+      <article class="team-card rounded-2xl bg-[#c5b4ff] p-4" data-team-card="3">
+       <p id="team-name-3" class="font-black"></p>
+       <p id="score-3" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+      <article class="team-card rounded-2xl bg-[#79bfff] p-4" data-team-card="4">
+       <p id="team-name-4" class="font-black"></p>
+       <p id="score-4" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+      <article class="team-card rounded-2xl bg-[#ffad5c] p-4" data-team-card="5">
+       <p id="team-name-5" class="font-black"></p>
+       <p id="score-5" class="team-score mt-1 text-4xl font-black">0</p>
+      </article>
+     </div>
+    </section>
+    <section data-template-id="board-panel" class="canva-panel rounded-[28px] border-4 border-[#10213e] bg-[#fff8e7] p-4 shadow-[8px_8px_0_#10213e] sm:p-6" aria-labelledby="board-heading" style="background: rgb(255, 248, 231);">
+     <div class="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+       <h2 id="board-heading" data-template-id="board-heading-text" class="canva-text font-black" style="color: rgb(16, 33, 62); font-weight: 900; font-style: normal; font-size: 24px;">Pick your space!</h2>
+       <p data-template-id="board-helper" class="canva-text mt-1 font-medium text-[#43526a]" style="color: rgb(67, 82, 106); font-weight: 500; font-style: normal; font-size: 16px;">Call out an animal picture and a number, then tap that square to reveal the surprise.</p>
+      </div><button id="new-board" type="button" data-template-id="new-board-button" class="canva-button inline-flex items-center justify-center gap-2 rounded-xl border-3 border-[#10213e] bg-[#f44b4b] px-5 py-3 font-black text-white shadow-[4px_4px_0_#10213e] transition hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#10213e] active:translate-y-1 active:shadow-[2px_2px_0_#10213e]" style="background: rgb(244, 75, 75); color: rgb(255, 255, 255); font-weight: 800;"> <i data-lucide="shuffle" width="20" height="20" aria-hidden="true"></i> <span data-template-id="new-board-button-text" class="canva-text" style="color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 16px;">New shuffled board</span> </button>
+     </div>
+     <div class="board-scroll" aria-label="Zonk game board">
+      <div id="zonk-board" class="zonk-board">
+       <div class="corner-cell" aria-hidden="true">
+        #
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-0" loading="lazy" class="canva-image animal-photo" src="canva://MAENDZ4TGus/1" alt="Detailed close-up of a brown bear's face, showcasing its expressive eyes and fur texture.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-1" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/145939/pexels-photo-145939.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Close-up of a tiger walking through water amidst greenery, showcasing its majestic stripes and intense gaze.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-2" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/2295744/pexels-photo-2295744.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="A close-up shot of a red fox sitting in its natural habitat, showcasing its captivating eyes and fur.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-3" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/86596/owl-bird-eyes-eagle-owl-86596.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Intense close-up of an owl showcasing its vibrant orange eyes and detailed feathers.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-4" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/31047125/pexels-photo-31047125.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Adorable giant panda munching on bamboo, showcasing its natural habitat.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-5" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/34549070/pexels-photo-34549070.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Two sea otters peacefully float in water, showcasing marine wildlife at its cutest.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-6" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/2610309/pexels-photo-2610309.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Adorable koala resting in a eucalyptus tree in Fig Tree Pocket, Australia.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-7" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/20692814/pexels-photo-20692814.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="A charming close-up of a white llama under a bright blue sky, showcasing its fluffy fur and curious expression.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-8" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/70083/frog-macro-amphibian-green-70083.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Vibrant green tree frog captured in detail against a dark background.">
+       </div>
+       <div class="photo-cell"><img data-template-id="animal-photo-9" loading="lazy" class="canva-image animal-photo" src="https://images.pexels.com/photos/7249475/pexels-photo-7249475.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=400" alt="Close-up of a wolf in the woods, capturing its intense gaze in natural setting.">
+       </div>
+      </div>
+     </div>
+    </section>
+    <section data-template-id="legend-section" class="canva-section mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-labelledby="legend-heading" style="background: transparent;">
+     <h2 id="legend-heading" class="sr-only">Game board legend</h2>
+     <div data-template-id="legend-points" class="canva-card rounded-2xl border-3 border-[#10213e] bg-[#ffd43b] p-4 font-bold shadow-[3px_3px_0_#10213e]" style="background: rgb(255, 212, 59); color: rgb(16, 33, 62); font-weight: 700; font-style: normal; font-size: 15px;">⭐ Points: gain or lose points instantly.</div>
+     <div data-template-id="legend-twists" class="canva-card rounded-2xl border-3 border-[#10213e] bg-[#13b8a6] p-4 font-bold text-white shadow-[3px_3px_0_#10213e]" style="background: rgb(19, 184, 166); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 15px;">🔀 Twists: score swaps, steals, doubles, and more.</div>
+     <div data-template-id="legend-zonk" class="canva-card rounded-2xl border-3 border-[#10213e] bg-[#f44b4b] p-4 font-bold text-white shadow-[3px_3px_0_#10213e]" style="background: rgb(244, 75, 75); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 15px;">💣 Zonk: your score goes back to zero.</div>
+     <div data-template-id="legend-challenge" class="canva-card rounded-2xl border-3 border-[#10213e] bg-[#c5b4ff] p-4 font-bold shadow-[3px_3px_0_#10213e]" style="background: rgb(197, 180, 255); color: rgb(16, 33, 62); font-weight: 700; font-style: normal; font-size: 15px;">🤸 Challenge: complete a silly task for points.</div>
+    </section>
+   </div>
+   <p id="game-status" class="sr-only-live" aria-live="polite"></p>
+  </main>
+  <div id="reveal-modal" class="reveal-modal fixed inset-0 z-50 items-center justify-center bg-[#10213e]/75 p-4" role="dialog" aria-modal="true" aria-labelledby="reveal-title">
+   <div id="reveal-card" class="reveal-card w-full max-w-md rounded-[28px] border-4 border-[#10213e] bg-[#fff8e7] p-6 text-center shadow-[10px_10px_0_#ffd43b]">
+    <div id="outcome-icon" class="outcome-icon bg-[#ffd43b]">
+     ?
+    </div>
+    <p id="reveal-coordinate" class="mb-1 text-sm font-extrabold uppercase tracking-widest text-[#43526a]"></p>
+    <h2 id="reveal-title" class="text-3xl font-black">Reveal!</h2>
+    <p id="reveal-description" class="mt-3 text-lg font-semibold"></p>
+    <div id="target-picker" class="mt-5 hidden text-left">
+     <label data-template-id="target-picker-label" class="canva-text mb-2 block font-black" for="target-team" style="color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Choose another team:</label> <select id="target-team" class="w-full rounded-xl border-3 border-[#10213e] bg-white px-3 py-3 font-bold"></select> <button id="apply-twist" type="button" data-template-id="apply-twist-button" class="canva-button mt-3 w-full rounded-xl border-3 border-[#10213e] bg-[#13b8a6] px-4 py-3 font-black text-white shadow-[3px_3px_0_#10213e]" style="background: rgb(19, 184, 166); color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 16px;">Apply twist</button>
+    </div><button id="challenge-complete" type="button" data-template-id="challenge-complete-button" class="canva-button mt-5 hidden w-full rounded-xl border-3 border-[#10213e] bg-[#bbdf39] px-4 py-3 font-black shadow-[3px_3px_0_#10213e]" style="background: rgb(187, 223, 57); color: rgb(16, 33, 62); font-weight: 800; font-style: normal; font-size: 16px;">Challenge complete: add 15 points</button> <button id="close-reveal" type="button" data-template-id="close-reveal-button" class="canva-button mt-5 w-full rounded-xl border-3 border-[#10213e] bg-[#10213e] px-4 py-3 font-black text-white" style="background: rgb(16, 33, 62); color: rgb(255, 255, 255); font-weight: 800; font-style: normal; font-size: 16px;">Back to the board</button>
+   </div>
+  </div>
+  <script src="/_sdk/20ec72cea0cb85e1.editing_sdk.js" integrity="sha512-y1Lf0yXrnk1vqzLs9a/3x3pp+jSvei2Pbl+x/omYgN5b7HqLzMgs5Vx9HdgcQfw7jcDinPHCzHGQ6BsPf/68zQ=="></script>
+  <script>
+    const animalNames = ["Bear", "Tiger", "Fox", "Owl", "Panda", "Otter", "Koala", "Llama", "Frog", "Wolf"];
+    const fallbackNames = ["Red Rovers", "Green Giants", "Blue Blazers", "Purple Panthers", "Sky Sharks", "Orange Owls"];
+    const scores = [0, 0, 0, 0, 0, 0];
+
+    let teamNames = [...fallbackNames];
+    let boardItems = [];
+    let pendingEffect = null;
+
+    const board = document.getElementById("zonk-board");
+    const activeTeam = document.getElementById("active-team");
+    const targetTeam = document.getElementById("target-team");
+    const modal = document.getElementById("reveal-modal");
+    const targetPicker = document.getElementById("target-picker");
+    const challengeButton = document.getElementById("challenge-complete");
+    const applyTwist = document.getElementById("apply-twist");
+
+    function shuffle(items) {
+      for (let index = items.length - 1; index > 0; index--) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
+      }
+      return items;
+    }
+
+    function createBoardItems() {
+      const items = [];
+      const positives = [5, 10, 10, 15, 15, 20, 20, 25, 25, 30];
+      const negatives = [-5, -10, -10, -15, -15, -20];
+
+      for (let index = 0; index < 55; index++) {
+        const points = positives[index % positives.length];
+        items.push({ type: "points", points, icon: "⭐", title: `+${points} points`, description: "Nice choice! Add these points to your team score." });
+      }
+
+      for (let index = 0; index < 18; index++) {
+        const points = negatives[index % negatives.length];
+        items.push({ type: "points", points, icon: "💥", title: `${points} points`, description: "Uh-oh! Subtract these points from your team score." });
+      }
+
+      for (let index = 0; index < 7; index++) {
+        items.push({ type: "zonk", icon: "💣", title: "ZONK!", description: "Your team score resets to zero!" });
+      }
+
+      const twists = [
+        { type: "double", icon: "✌️", title: "DOUBLE SCORE!", description: "Your current team score doubles!" },
+        { type: "negative", icon: "🔄", title: "MULTIPLY BY -1", description: "Flip your current score to the opposite number!" },
+        { type: "steal", icon: "🦝", title: "SCORE STEAL!", description: "Choose another team and steal 15 points." },
+        { type: "switch", icon: "🔀", title: "SWITCH SCORES!", description: "Choose another team and swap your scores." },
+        { type: "bonus", icon: "🎲", title: "BONUS TURN!", description: "Your team gets another turn after this one!" }
+      ];
+
+      for (let index = 0; index < 10; index++) {
+        items.push({ ...twists[index % twists.length] });
+      }
+
+      const challenges = [
+        "Do five jumping jacks together to earn 15 points!",
+        "Balance on one foot for ten seconds to earn 15 points!",
+        "Make your best animal sound to earn 15 points!",
+        "Spell ZONK with your arms to earn 15 points!",
+        "Do a silent victory dance to earn 15 points!",
+        "Give your team a synchronized high-five to earn 15 points!",
+        "Touch your toes three times to earn 15 points!",
+        "Freeze like a statue for five seconds to earn 15 points!",
+        "Clap your team name in rhythm to earn 15 points!",
+        "Pretend to be the animal at your coordinate to earn 15 points!"
+      ];
+
+      challenges.forEach((description) => {
+        items.push({ type: "challenge", icon: "🤸", title: "CHALLENGE!", description });
+      });
+
+      return shuffle(items);
+    }
+
+    function populateTeamSelectors() {
+      const currentActive = activeTeam.value || "0";
+      const currentTarget = targetTeam.value || "0";
+
+      activeTeam.innerHTML = "";
+      targetTeam.innerHTML = "";
+
+      teamNames.forEach((name, index) => {
+        const activeOption = document.createElement("option");
+        activeOption.value = index;
+        activeOption.textContent = name;
+        activeTeam.appendChild(activeOption);
+
+        const targetOption = document.createElement("option");
+        targetOption.value = index;
+        targetOption.textContent = name;
+        targetTeam.appendChild(targetOption);
+      });
+
+      activeTeam.value = currentActive;
+      targetTeam.value = currentTarget;
+    }
+
+    function updateTeamNames() {
+      teamNames.forEach((name, index) => {
+        document.getElementById(`team-name-${index}`).textContent = name;
+      });
+      populateTeamSelectors();
+    }
+
+    function updateScores() {
+      scores.forEach((score, index) => {
+        document.getElementById(`score-${index}`).textContent = score;
+      });
+
+      document.querySelectorAll("[data-team-card]").forEach((card) => {
+        card.classList.toggle("active", Number(card.dataset.teamCard) === Number(activeTeam.value));
+      });
+    }
+
+    function renderBoard() {
+      board.querySelectorAll(".row-label, .board-tile").forEach((element) => element.remove());
+
+      let boardIndex = 0;
+      for (let row = 1; row <= 10; row++) {
+        const rowLabel = document.createElement("div");
+        rowLabel.className = "row-label";
+        rowLabel.textContent = row;
+        board.appendChild(rowLabel);
+
+        for (let column = 0; column < 10; column++) {
+          const tile = document.createElement("button");
+          const animal = animalNames[column];
+          tile.type = "button";
+          tile.className = "board-tile";
+          tile.dataset.index = boardIndex;
+          tile.setAttribute("aria-label", `${animal} ${row}, unrevealed`);
+          tile.innerHTML = '<span class="tile-dot" aria-hidden="true"></span>';
+
+          const selectedIndex = boardIndex;
+          tile.addEventListener("click", () => revealSpace(selectedIndex, animal, row, tile));
+
+          board.appendChild(tile);
+          boardIndex++;
+        }
+      }
+    }
+
+    function showModal(item, coordinate) {
+      document.getElementById("reveal-coordinate").textContent = coordinate;
+      document.getElementById("outcome-icon").textContent = item.icon;
+      document.getElementById("reveal-title").textContent = item.title;
+      document.getElementById("reveal-description").textContent = item.description;
+
+      targetPicker.classList.add("hidden");
+      challengeButton.classList.add("hidden");
+      modal.classList.add("open");
+
+      const revealCard = document.getElementById("reveal-card");
+      revealCard.classList.remove("burst");
+      void revealCard.offsetWidth;
+      revealCard.classList.add("burst");
+
+      if (item.type === "steal" || item.type === "switch") {
+        pendingEffect = item;
+        targetPicker.classList.remove("hidden");
+        targetTeam.value = activeTeam.value;
+      } else if (item.type === "challenge") {
+        pendingEffect = item;
+        challengeButton.classList.remove("hidden");
+      } else {
+        pendingEffect = null;
+      }
+    }
+
+    function revealSpace(index, animal, row, tile) {
+      const item = boardItems[index];
+      if (!item || tile.disabled) return;
+
+      tile.disabled = true;
+      tile.innerHTML = '<span aria-hidden="true">✓</span>';
+      tile.setAttribute("aria-label", `${animal} ${row}, revealed`);
+
+      const team = Number(activeTeam.value);
+
+      if (item.type === "points") scores[team] += item.points;
+      if (item.type === "zonk") scores[team] = 0;
+      if (item.type === "double") scores[team] *= 2;
+      if (item.type === "negative") scores[team] *= -1;
+
+      updateScores();
+      showModal(item, `${animal} ${row}`);
+      document.getElementById("game-status").textContent = `${animal} ${row} revealed: ${item.title}`;
+    }
+
+    function applyPendingEffect() {
+      if (!pendingEffect) return;
+
+      const currentTeam = Number(activeTeam.value);
+      const chosenTarget = Number(targetTeam.value);
+
+      if (currentTeam === chosenTarget) {
+        document.getElementById("reveal-description").textContent = "Pick a different team for this twist.";
+        return;
+      }
+
+      if (pendingEffect.type === "steal") {
+        const amount = Math.min(15, Math.max(0, scores[chosenTarget]));
+        scores[chosenTarget] -= amount;
+        scores[currentTeam] += amount;
+      }
+
+      if (pendingEffect.type === "switch") {
+        [scores[currentTeam], scores[chosenTarget]] = [scores[chosenTarget], scores[currentTeam]];
+      }
+
+      updateScores();
+      targetPicker.classList.add("hidden");
+      pendingEffect = null;
+      document.getElementById("reveal-description").textContent = "Twist applied! Check the scoreboard.";
+    }
+
+    function completeChallenge() {
+      const team = Number(activeTeam.value);
+      scores[team] += 15;
+      updateScores();
+      challengeButton.classList.add("hidden");
+      pendingEffect = null;
+      document.getElementById("reveal-description").textContent = "Challenge complete! 15 points added.";
+    }
+
+    function closeModal() {
+      modal.classList.remove("open");
+      pendingEffect = null;
+    }
+
+    function newGame() {
+      scores.fill(0);
+      pendingEffect = null;
+      boardItems = createBoardItems();
+      updateScores();
+      renderBoard();
+      document.getElementById("game-status").textContent = "New shuffled Zonk board ready.";
+    }
+
+    function startGame(event) {
+      event.preventDefault();
+
+      teamNames = fallbackNames.map((fallback, index) => {
+        const enteredName = document.getElementById(`team-input-${index}`).value.trim();
+        return enteredName || fallback;
+      });
+
+      updateTeamNames();
+      document.getElementById("setup-screen").classList.add("hidden");
+      document.getElementById("game-screen").classList.remove("hidden");
+      newGame();
+    }
+
+    function editTeams() {
+      closeModal();
+      teamNames.forEach((name, index) => {
+        document.getElementById(`team-input-${index}`).value = name;
+      });
+      document.getElementById("game-screen").classList.add("hidden");
+      document.getElementById("setup-screen").classList.remove("hidden");
+      document.getElementById("team-input-0").focus();
+    }
+
+    function initializeGame() {
+      lucide.createIcons();
+
+      fallbackNames.forEach((name, index) => {
+        document.getElementById(`team-input-${index}`).value = name;
+      });
+
+      document.getElementById("team-setup-form").addEventListener("submit", startGame);
+      document.getElementById("new-board").addEventListener("click", newGame);
+      document.getElementById("edit-teams").addEventListener("click", editTeams);
+      activeTeam.addEventListener("change", updateScores);
+      applyTwist.addEventListener("click", applyPendingEffect);
+      challengeButton.addEventListener("click", completeChallenge);
+      document.getElementById("close-reveal").addEventListener("click", closeModal);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("open")) closeModal();
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initializeGame, { once: true });
+    } else {
+      initializeGame();
+    }
+  </script>
+ 
+</body></html>
